@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Certificate Portfolio | Micro-Credentials Aggregator</title>
+    
+    <style>
+        /* Enhanced Professional Profile Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-sm: 0.25rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-900);
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            min-height: 100vh;
+        }
+        
+        /* Professional Header */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 4rem 0 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200"><polygon fill="rgba(255,255,255,0.05)" points="0,0 1000,0 1000,100 0,200"/></svg>') no-repeat center;
+            background-size: cover;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-xl);
+            flex-shrink: 0;
+        }
+        
+        .profile-details h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-title {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+        
+        .profile-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .meta-icon {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 3rem 0;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 3rem;
+        }
+        
+        /* Certificates Section */
+        .certificates-section {
+            background: var(--white);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .view-toggle {
+            display: flex;
+            background: var(--gray-100);
+            border-radius: var(--radius-lg);
+            padding: 0.25rem;
+        }
+        
+        .toggle-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .toggle-btn.active {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* Certificate Cards */
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .certificate-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .certificate-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary);
+        }
+        
+        .cert-header {
+            position: relative;
+            height: 160px;
+            overflow: hidden;
+        }
+        
+        .cert-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cert-badges {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .platform-badge {
+            background: var(--white);
+            color: var(--gray-800);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+        
+        .status-verified { background: var(--success); }
+        .status-pending { background: var(--warning); }
+        .status-expired { background: var(--danger); }
+        
+        .cert-content {
+            padding: 1.5rem;
+        }
+        
+        .cert-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        
+        .cert-institution {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cert-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .meta-label {
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+        
+        .meta-value {
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+        
+        .cert-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .skill-tag {
+            background: var(--primary);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .skill-more {
+            background: var(--gray-300);
+            color: var(--gray-700);
+        }
+        
+        /* List View */
+        .certificates-list {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .certificates-list.active {
+            display: flex;
+        }
+        
+        .certificates-grid.active {
+            display: grid;
+        }
+        
+        .certificate-row {
+            display: flex;
+            align-items: center;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .certificate-row:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .row-image {
+            width: 60px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+        }
+        
+        .row-content {
+            flex: 1;
+            margin-left: 1rem;
+        }
+        
+        .row-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .row-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+        
+        .row-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-right: 1rem;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .sidebar-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        /* Skills Cloud */
+        .skills-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .skill-item {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .skill-item:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .skill-count {
+            background: var(--gray-300);
+            color: var(--gray-600);
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+        
+        /* Platforms */
+        .platforms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .platform-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .platform-item:hover {
+            background: var(--gray-100);
+        }
+        
+        .platform-name {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        
+        .platform-count {
+            background: var(--primary);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* Timeline */
+        .learning-timeline {
+            position: relative;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 24px;
+            bottom: -24px;
+            width: 2px;
+            background: var(--gray-200);
+        }
+        
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 4px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .timeline-content {
+            margin-left: 1rem;
+            flex: 1;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .timeline-date {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .profile-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-details h1 {
+                font-size: 2rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .certificates-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gray-200);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+        
+        /* Print Styles */
+        @media print {
+            .view-toggle,
+            .action-buttons {
+                display: none;
+            }
+            
+            .certificate-card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid var(--gray-300);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Profile Header -->
+    <header class="profile-header">
+        <div class="container">
+            <div class="profile-info">
+                <img id="profile-avatar" class="profile-avatar" src="https://via.placeholder.com/120x120/2563eb/white?text=User" alt="Profile Picture" />
+                <div class="profile-details">
+                    <h1 id="profile-name">Professional Name</h1>
+                    <p id="profile-title" class="profile-title">Title & Specialization</p>
+                    <div class="profile-meta">
+                        <div class="meta-item">
+                            <svg class="meta-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span id="profile-location">Location</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg class="meta-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            <span id="profile-email">email@example.com</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg class="meta-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span id="join-date">Member since 2023</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <a href="mailto:" id="contact-btn" class="btn btn-primary">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            Contact
+                        </a>
+                        <button onclick="window.print()" class="btn btn-secondary">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zM5 14H4v-2h1v2zm1 0v2h8v-2H6zM15 12h1V9h-1v3z" clip-rule="evenodd"></path>
+                            </svg>
+                            Print Portfolio
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div id="total-certificates" class="stat-number">0</div>
+                    <div class="stat-label">Verified Certificates</div>
+                </div>
+                <div class="stat-card">
+                    <div id="total-hours" class="stat-number">0</div>
+                    <div class="stat-label">Learning Hours</div>
+                </div>
+                <div class="stat-card">
+                    <div id="total-platforms" class="stat-number">0</div>
+                    <div class="stat-label">Learning Platforms</div>
+                </div>
+                <div class="stat-card">
+                    <div id="total-skills" class="stat-number">0</div>
+                    <div class="stat-label">Skills Acquired</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Certificates Section -->
+                <div class="certificates-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Professional Certificates</h2>
+                        <div class="view-toggle">
+                            <button class="toggle-btn active" onclick="switchView('grid')">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                </svg>
+                                Grid
+                            </button>
+                            <button class="toggle-btn" onclick="switchView('list')">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                List
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading State -->
+                    <div id="loading" class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                    
+                    <!-- Grid View -->
+                    <div id="certificates-grid" class="certificates-grid active">
+                        <!-- Certificates will be populated here -->
+                    </div>
+                    
+                    <!-- List View -->
+                    <div id="certificates-list" class="certificates-list">
+                        <!-- List view will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <!-- Skills Card -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Top Skills</h3>
+                        <div id="skills-cloud" class="skills-cloud">
+                            <!-- Skills will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Platforms Card -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Learning Platforms</h3>
+                        <div id="platforms-list" class="platforms-list">
+                            <!-- Platforms will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Learning Timeline -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Recent Achievements</h3>
+                        <div id="learning-timeline" class="learning-timeline">
+                            <!-- Timeline will be populated here -->
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Application state
+        let currentUser = null;
+        let allCertificates = [];
+        let currentView = 'grid';
+
+        // Get user ID from URL parameter
+        function getUserIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('user') || 'user1'; // Default to user1
+        }
+
+        // Format date function
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Fetch user data
+        async function fetchUserData(userId) {
+            try {
+                const response = await fetch(`http://localhost:3001/api/certificates/${userId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data.data;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('API Error:', error);
+                // Fallback to sample data if API fails
+                return getSampleUserData(userId);
+            }
+        }
+
+        // Sample fallback data
+        function getSampleUserData(userId) {
+            const sampleData = {
+                user1: {
+                    user: {
+                        name: 'Alex Chen',
+                        email: 'alex.chen@email.com',
+                        location: 'San Francisco, CA',
+                        joinDate: '2023-01-15',
+                        bio: 'Full-stack developer with expertise in data science',
+                        profileImage: 'https://via.placeholder.com/120x120/2563eb/white?text=AC'
+                    },
+                    certificates: [
+                        {
+                            id: 'cert_001',
+                            courseName: 'Google Data Analytics Professional Certificate',
+                            platform: 'Coursera',
+                            institution: 'Google',
+                            completionDate: '2024-08-15',
+                            verificationStatus: 'Verified',
+                            duration: '6 months',
+                            hours: 180,
+                            grade: '98%',
+                            skills: ['Data Analysis', 'SQL', 'Tableau', 'R Programming', 'Data Visualization'],
+                            category: 'Data Science',
+                            thumbnail: 'https://via.placeholder.com/300x200/4285f4/white?text=Google+Data'
+                        },
+                        // Add more sample certificates as needed
+                    ]
+                }
+            };
+            
+            return sampleData[userId] || sampleData.user1;
+        }
+
+        // Populate profile header
+        function populateProfile(userData) {
+            currentUser = userData.user;
+            allCertificates = userData.certificates || [];
+
+            // Update profile info
+            document.getElementById('profile-avatar').src = currentUser.profileImage || 'https://via.placeholder.com/120x120/2563eb/white?text=User';
+            document.getElementById('profile-name').textContent = currentUser.name;
+            document.getElementById('profile-title').textContent = currentUser.bio || 'Professional Certificate Holder';
+            document.getElementById('profile-location').textContent = currentUser.location || 'Global';
+            document.getElementById('profile-email').textContent = currentUser.email;
+            document.getElementById('join-date').textContent = `Member since ${new Date(currentUser.joinDate).getFullYear()}`;
+            document.getElementById('contact-btn').href = `mailto:${currentUser.email}`;
+
+            // Update stats
+            const platforms = [...new Set(allCertificates.map(cert => cert.platform))];
+            const skills = [...new Set(allCertificates.flatMap(cert => cert.skills || []))];
+            const totalHours = allCertificates.reduce((sum, cert) => sum + (cert.hours || 0), 0);
+
+            document.getElementById('total-certificates').textContent = allCertificates.length;
+            document.getElementById('total-hours').textContent = totalHours.toLocaleString();
+            document.getElementById('total-platforms').textContent = platforms.length;
+            document.getElementById('total-skills').textContent = skills.length;
+
+            // Update page title
+            document.title = `${currentUser.name} - Professional Certificate Portfolio`;
+        }
+
+        // Render certificates in grid view
+        function renderCertificatesGrid() {
+            const container = document.getElementById('certificates-grid');
+            container.innerHTML = '';
+
+            allCertificates.forEach(cert => {
+                const card = document.createElement('div');
+                card.className = 'certificate-card';
+                
+                const statusClass = `status-${cert.verificationStatus.toLowerCase().replace(' ', '-')}`;
+                
+                card.innerHTML = `
+                    <div class="cert-header">
+                        <img src="${cert.thumbnail}" alt="${cert.courseName}" class="cert-image" />
+                        <div class="cert-badges">
+                            <span class="platform-badge">${cert.platform}</span>
+                            <span class="status-badge ${statusClass}">${cert.verificationStatus}</span>
+                        </div>
+                    </div>
+                    <div class="cert-content">
+                        <h3 class="cert-title">${cert.courseName}</h3>
+                        <p class="cert-institution">${cert.institution}</p>
+                        <div class="cert-meta">
+                            <div class="meta-row">
+                                <span class="meta-label">Completed:</span>
+                                <span class="meta-value">${formatDate(cert.completionDate)}</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="meta-label">Duration:</span>
+                                <span class="meta-value">${cert.duration}</span>
+                            </div>
+                            ${cert.grade ? `
+                            <div class="meta-row">
+                                <span class="meta-label">Grade:</span>
+                                <span class="meta-value">${cert.grade}</span>
+                            </div>
+                            ` : ''}
+                            <div class="meta-row">
+                                <span class="meta-label">Hours:</span>
+                                <span class="meta-value">${cert.hours}h</span>
+                            </div>
+                        </div>
+                        <div class="cert-skills">
+                            ${cert.skills.slice(0, 3).map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                            ${cert.skills.length > 3 ? `<span class="skill-tag skill-more">+${cert.skills.length - 3} more</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Render certificates in list view
+        function renderCertificatesList() {
+            const container = document.getElementById('certificates-list');
+            container.innerHTML = '';
+
+            allCertificates.forEach(cert => {
+                const row = document.createElement('div');
+                row.className = 'certificate-row';
+                
+                row.innerHTML = `
+                    <img src="${cert.thumbnail}" alt="${cert.courseName}" class="row-image" />
+                    <div class="row-content">
+                        <h4 class="row-title">${cert.courseName}</h4>
+                        <p class="row-subtitle">${cert.institution} • ${cert.platform}</p>
+                    </div>
+                    <div class="row-meta">
+                        <span>${formatDate(cert.completionDate)}</span>
+                        <span>${cert.hours}h</span>
+                        ${cert.grade ? `<span>${cert.grade}</span>` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(row);
+            });
+        }
+
+        // Render skills cloud
+        function renderSkillsCloud() {
+            const container = document.getElementById('skills-cloud');
+            container.innerHTML = '';
+
+            // Count skill occurrences
+            const skillCounts = {};
+            allCertificates.forEach(cert => {
+                cert.skills?.forEach(skill => {
+                    skillCounts[skill] = (skillCounts[skill] || 0) + 1;
+                });
+            });
+
+            // Sort by count and take top 15
+            const topSkills = Object.entries(skillCounts)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 15);
+
+            topSkills.forEach(([skill, count]) => {
+                const skillElement = document.createElement('div');
+                skillElement.className = 'skill-item';
+                skillElement.innerHTML = `
+                    ${skill}
+                    <span class="skill-count">${count}</span>
+                `;
+                container.appendChild(skillElement);
+            });
+        }
+
+        // Render platforms list
+        function renderPlatformsList() {
+            const container = document.getElementById('platforms-list');
+            container.innerHTML = '';
+
+            // Count platform occurrences
+            const platformCounts = {};
+            allCertificates.forEach(cert => {
+                platformCounts[cert.platform] = (platformCounts[cert.platform] || 0) + 1;
+            });
+
+            Object.entries(platformCounts)
+                .sort(([,a], [,b]) => b - a)
+                .forEach(([platform, count]) => {
+                    const platformElement = document.createElement('div');
+                    platformElement.className = 'platform-item';
+                    platformElement.innerHTML = `
+                        <span class="platform-name">${platform}</span>
+                        <span class="platform-count">${count}</span>
+                    `;
+                    container.appendChild(platformElement);
+                });
+        }
+
+        // Render learning timeline
+        function renderTimeline() {
+            const container = document.getElementById('learning-timeline');
+            container.innerHTML = '';
+
+            // Sort certificates by completion date (newest first) and take top 5
+            const recentCerts = [...allCertificates]
+                .sort((a, b) => new Date(b.completionDate) - new Date(a.completionDate))
+                .slice(0, 5);
+
+            recentCerts.forEach(cert => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                timelineItem.innerHTML = `
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">${cert.courseName}</div>
+                        <div class="timeline-date">${formatDate(cert.completionDate)}</div>
+                    </div>
+                `;
+                container.appendChild(timelineItem);
+            });
+        }
+
+        // Switch between grid and list view
+        function switchView(view) {
+            currentView = view;
+            
+            // Update toggle buttons
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide views
+            const gridView = document.getElementById('certificates-grid');
+            const listView = document.getElementById('certificates-list');
+            
+            if (view === 'grid') {
+                gridView.classList.add('active');
+                gridView.style.display = 'grid';
+                listView.classList.remove('active');
+                listView.style.display = 'none';
+            } else {
+                listView.classList.add('active');
+                listView.style.display = 'flex';
+                gridView.classList.remove('active');
+                gridView.style.display = 'none';
+                renderCertificatesList();
+            }
+        }
+
+        // Initialize the profile page
+        async function initializePage() {
+            const userId = getUserIdFromUrl();
+            
+            try {
+                // Show loading
+                document.getElementById('loading').style.display = 'flex';
+                
+                // Simulate loading delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Fetch user data
+                const userData = await fetchUserData(userId);
+                
+                // Populate the page
+                populateProfile(userData);
+                renderCertificatesGrid();
+                renderSkillsCloud();
+                renderPlatformsList();
+                renderTimeline();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+                document.getElementById('loading').innerHTML = '<p>Failed to load profile data. Please try again later.</p>';
+            }
+        }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
+
+        // Handle URL changes
+        window.addEventListener('popstate', initializePage);
+        
+        console.log('🎯 Professional Certificate Portfolio Interface Loaded!');
+        console.log('💡 URL Parameters: ?user=user1, ?user=user2, ?user=user3, etc.');
+    </script>
+</body>
+</html>

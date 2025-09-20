@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro-Credentials Aggregator | Auto-Sync Certificate Portfolio</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #0ea5e9;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            --gradient-secondary: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%);
+            --gradient-success: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-900);
+            background: linear-gradient(135deg, var(--gray-50) 0%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Advanced Header */
+        .header {
+            background: var(--gradient-primary);
+            color: var(--white);
+            padding: 3rem 0 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:rgba(255,255,255,0.1)"/><stop offset="100%" style="stop-color:rgba(255,255,255,0.05)"/></linearGradient></defs><polygon fill="url(%23grad)" points="0,0 1000,0 1000,150 0,200"/></svg>') no-repeat center;
+            background-size: cover;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--white) 0%, rgba(255,255,255,0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sync-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: var(--white);
+            border-radius: 2rem 2rem 0 0;
+            margin-top: -2rem;
+            position: relative;
+            z-index: 10;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .nav-container {
+            display: flex;
+            padding: 0;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2rem 2rem 0 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-tab.active::before {
+            width: 60%;
+        }
+        
+        .nav-tab.active {
+            color: var(--primary);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%);
+        }
+        
+        .nav-tab:hover:not(.active) {
+            color: var(--primary);
+            background: rgba(37, 99, 235, 0.02);
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 3rem 0;
+            background: var(--white);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Personal Profile Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        /* Profile Setup Card */
+        .profile-card {
+            background: var(--white);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-100);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        
+        .card-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .card-icon {
+            font-size: 1.5rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-input,
+        .form-textarea {
+            padding: 1.25rem 1.5rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 1rem;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--white);
+        }
+        
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 140px;
+            font-family: inherit;
+        }
+        
+        /* Platform Integration Section */
+        .platforms-section {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            border: 2px dashed var(--gray-200);
+            transition: all 0.3s ease;
+        }
+        
+        .platforms-section:hover {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.02) 0%, var(--white) 100%);
+        }
+        
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .platform-card {
+            background: var(--white);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            border: 2px solid var(--gray-100);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .platform-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .platform-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .platform-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+        }
+        
+        .platform-card.connected {
+            border-color: var(--success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, var(--white) 100%);
+        }
+        
+        .platform-card.connected::before {
+            background: var(--gradient-success);
+            transform: scaleX(1);
+        }
+        
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .platform-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--white);
+        }
+        
+        .platform-logo.coursera { background: #0056d3; }
+        .platform-logo.udemy { background: #a435f0; }
+        .platform-logo.edx { background: #02262b; }
+        .platform-logo.linkedin { background: #0077b5; }
+        .platform-logo.aws { background: #ff9900; }
+        .platform-logo.google { background: #4285f4; }
+        
+        .platform-info h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        
+        .platform-status {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-connected {
+            color: var(--success);
+        }
+        
+        .status-disconnected {
+            color: var(--gray-500);
+        }
+        
+        .platform-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 0.75rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .sidebar-card {
+            background: var(--white);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-100);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-1px);
+        }
+        
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Sync Activity */
+        .sync-activity {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 0.75rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+        
+        .activity-content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .quick-stat {
+            text-align: center;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 0.75rem;
+        }
+        
+        .quick-stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+        
+        .quick-stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            margin-top: 0.5rem;
+        }
+        
+        /* Action Buttons */
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-success {
+            background: var(--gradient-success);
+            color: var(--white);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            border: 2px solid var(--gray-200);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--gray-300);
+            background: var(--gray-50);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-1px);
+        }
+        
+        /* Search Section */
+        .search-section {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-hero {
+            background: var(--white);
+            border-radius: 2rem;
+            padding: 3rem;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 3rem;
+            border: 1px solid var(--gray-100);
+        }
+        
+        .search-hero h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+        
+        .search-hero p {
+            font-size: 1.1rem;
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            background: var(--gray-50);
+            padding: 0.75rem;
+            border-radius: 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid var(--gray-100);
+            transition: all 0.3s ease;
+        }
+        
+        .search-form:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 1.25rem 1.5rem;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1rem;
+            background: var(--white);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .search-btn {
+            padding: 1.25rem 2.5rem;
+            background: var(--gradient-primary);
+            color: var(--white);
+            border: none;
+            border-radius: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .demo-users {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .demo-user-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            border: 2px solid var(--gray-100);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+        
+        .demo-user-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .demo-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--white);
+        }
+        
+        .demo-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        
+        .demo-title {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+        
+        .demo-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        
+        /* Enhanced Profile Display */
+        .profile-display {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .profile-header {
+            background: var(--gradient-primary);
+            color: var(--white);
+            padding: 4rem 0 3rem 0;
+            border-radius: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300"><defs><radialGradient id="grad" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:rgba(255,255,255,0.1)"/><stop offset="100%" style="stop-color:rgba(255,255,255,0.02)"/></radialGradient></defs><circle fill="url(%23grad)" cx="200" cy="100" r="150"/><circle fill="url(%23grad)" cx="800" cy="200" r="200"/></svg>') no-repeat center;
+            background-size: cover;
+        }
+        
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: var(--shadow-2xl);
+            object-fit: cover;
+        }
+        
+        .profile-details h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .profile-email {
+            opacity: 0.9;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .profile-bio {
+            opacity: 0.85;
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-4px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        /* Enhanced Certificates Display */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .certificates-container {
+            background: var(--white);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-100);
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 2rem;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+        
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        
+        .certificate-card {
+            background: var(--white);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 2px solid var(--gray-100);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .certificate-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            z-index: 1;
+        }
+        
+        .certificate-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .certificate-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-2xl);
+            border-color: var(--primary);
+        }
+        
+        .cert-header {
+            height: 140px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+        }
+        
+        .cert-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .certificate-card:hover .cert-image {
+            transform: scale(1.1);
+        }
+        
+        .cert-badges {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 2;
+        }
+        
+        .platform-badge {
+            background: var(--white);
+            color: var(--gray-800);
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .status-verified { background: var(--success); }
+        .status-pending { background: var(--warning); }
+        .status-expired { background: var(--danger); }
+        
+        .cert-content {
+            padding: 2rem;
+        }
+        
+        .cert-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--gray-900);
+            line-height: 1.4;
+        }
+        
+        .cert-institution {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cert-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .meta-label {
+            color: var(--gray-500);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .meta-value {
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .cert-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .skill-tag {
+            background: var(--primary);
+            color: var(--white);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .skill-more {
+            background: var(--gray-300);
+            color: var(--gray-700);
+        }
+        
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+        }
+        
+        /* Error Messages */
+        .error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fef7f7 100%);
+            border: 2px solid #fecaca;
+            color: #dc2626;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .success {
+            background: linear-gradient(135deg, #f0fdf4 0%, #f7fef7 100%);
+            border: 2px solid #bbf7d0;
+            color: #166534;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .sidebar {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                display: grid;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-tab {
+                padding: 1rem;
+                font-size: 0.95rem;
+            }
+            
+            .form-grid,
+            .platforms-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .profile-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+            
+            .profile-details h2 {
+                font-size: 2rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .certificates-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-users {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Hidden utility */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>🎓 Micro-Credentials Aggregator</h1>
+                <p class="header-subtitle">Automatically sync and showcase certificates from all your learning platforms</p>
+                <div class="sync-status">
+                    <div class="sync-indicator"></div>
+                    <span>Auto-sync enabled • Last sync: 2 minutes ago</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <div class="nav-container">
+            <button class="nav-tab active" onclick="showTab('dashboard')">
+                <span class="nav-icon">📊</span>
+                <span>My Dashboard</span>
+            </button>
+            <button class="nav-tab" onclick="showTab('explore')">
+                <span class="nav-icon">🔍</span>
+                <span>Explore Portfolios</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- My Dashboard Tab -->
+    <div id="dashboard" class="tab-content active">
+        <div class="container">
+            <div class="dashboard-grid">
+                <div class="main-content">
+                    <!-- Personal Information -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <span class="card-icon">👤</span>
+                                Personal Information
+                            </h2>
+                            <button class="btn btn-outline" onclick="savePersonalInfo()">
+                                💾 Save Profile
+                            </button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span>👤</span> Full Name *
+                                </label>
+                                <input type="text" class="form-input" id="user-name" placeholder="Enter your full name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span>📧</span> Email Address *
+                                </label>
+                                <input type="email" class="form-input" id="user-email" placeholder="your.email@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span>📍</span> Location
+                                </label>
+                                <input type="text" class="form-input" id="user-location" placeholder="City, Country">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span>💼</span> LinkedIn Profile
+                                </label>
+                                <input type="url" class="form-input" id="user-linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label">
+                                    <span>📝</span> Professional Bio
+                                </label>
+                                <textarea class="form-textarea" id="user-bio" placeholder="Share your professional background, expertise, and career goals. This will be visible on your public portfolio."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Platform Connections -->
+                    <div class="platforms-section">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <span class="card-icon">🔗</span>
+                                Learning Platform Connections
+                            </h2>
+                            <button class="btn btn-primary" onclick="syncAllPlatforms()">
+                                🔄 Sync All Platforms
+                            </button>
+                        </div>
+                        <p style="color: var(--gray-600); margin-bottom: 2rem;">Connect your learning accounts to automatically sync certificates and achievements.</p>
+                        
+                        <div class="platforms-grid">
+                            <!-- Coursera -->
+                            <div class="platform-card connected" onclick="togglePlatform('coursera')">
+                                <div class="platform-header">
+                                    <div class="platform-logo coursera">C</div>
+                                    <div class="platform-info">
+                                        <h3>Coursera</h3>
+                                        <div class="platform-status status-connected">
+                                            ✅ Connected
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-number">12</div>
+                                        <div class="stat-label">Certificates</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">340h</div>
+                                        <div class="stat-label">Hours</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">2</div>
+                                        <div class="stat-label">Specializations</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-secondary" style="width: 100%;">
+                                    ⚙️ Manage Connection
+                                </button>
+                            </div>
+
+                            <!-- Udemy -->
+                            <div class="platform-card" onclick="connectPlatform('udemy')">
+                                <div class="platform-header">
+                                    <div class="platform-logo udemy">U</div>
+                                    <div class="platform-info">
+                                        <h3>Udemy</h3>
+                                        <div class="platform-status status-disconnected">
+                                            ⭕ Not Connected
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Certificates</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Hours</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Courses</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;">
+                                    🔗 Connect Account
+                                </button>
+                            </div>
+
+                            <!-- edX -->
+                            <div class="platform-card" onclick="connectPlatform('edx')">
+                                <div class="platform-header">
+                                    <div class="platform-logo edx">X</div>
+                                    <div class="platform-info">
+                                        <h3>edX</h3>
+                                        <div class="platform-status status-disconnected">
+                                            ⭕ Not Connected
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Certificates</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Hours</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">MicroMasters</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;">
+                                    🔗 Connect Account
+                                </button>
+                            </div>
+
+                            <!-- LinkedIn Learning -->
+                            <div class="platform-card connected" onclick="togglePlatform('linkedin')">
+                                <div class="platform-header">
+                                    <div class="platform-logo linkedin">in</div>
+                                    <div class="platform-info">
+                                        <h3>LinkedIn Learning</h3>
+                                        <div class="platform-status status-connected">
+                                            ✅ Connected
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-number">8</div>
+                                        <div class="stat-label">Certificates</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">95h</div>
+                                        <div class="stat-label">Hours</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">24</div>
+                                        <div class="stat-label">Skills</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-secondary" style="width: 100%;">
+                                    ⚙️ Manage Connection
+                                </button>
+                            </div>
+
+                            <!-- AWS -->
+                            <div class="platform-card" onclick="connectPlatform('aws')">
+                                <div class="platform-header">
+                                    <div class="platform-logo aws">AWS</div>
+                                    <div class="platform-info">
+                                        <h3>AWS Training</h3>
+                                        <div class="platform-status status-disconnected">
+                                            ⭕ Not Connected
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Certifications</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Digital Badges</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Training Hours</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;">
+                                    🔗 Connect Account
+                                </button>
+                            </div>
+
+                            <!-- Google Cloud -->
+                            <div class="platform-card" onclick="connectPlatform('google')">
+                                <div class="platform-header">
+                                    <div class="platform-logo google">G</div>
+                                    <div class="platform-info">
+                                        <h3>Google Cloud</h3>
+                                        <div class="platform-status status-disconnected">
+                                            ⭕ Not Connected
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="platform-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Certifications</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Skill Badges</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">-</div>
+                                        <div class="stat-label">Quests</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;">
+                                    🔗 Connect Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Quick Stats -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">
+                            <span>📈</span> Portfolio Summary
+                        </h3>
+                        <div class="quick-stats">
+                            <div class="quick-stat">
+                                <div class="quick-stat-number" id="dashboard-total-certs">20</div>
+                                <div class="quick-stat-label">Total Certificates</div>
+                            </div>
+                            <div class="quick-stat">
+                                <div class="quick-stat-number" id="dashboard-total-hours">435</div>
+                                <div class="quick-stat-label">Learning Hours</div>
+                            </div>
+                            <div class="quick-stat">
+                                <div class="quick-stat-number" id="dashboard-platforms">2</div>
+                                <div class="quick-stat-label">Connected Platforms</div>
+                            </div>
+                            <div class="quick-stat">
+                                <div class="quick-stat-number" id="dashboard-skills">48</div>
+                                <div class="quick-stat-label">Skills Acquired</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1.5rem;">
+                            <button class="btn btn-primary" style="width: 100%;" onclick="previewPortfolio()">
+                                👁️ Preview My Portfolio
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Sync Activity -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">
+                            <span>⚡</span> Recent Activity
+                        </h3>
+                        <div class="sync-activity">
+                            <div class="activity-item">
+                                <div class="activity-icon">📜</div>
+                                <div class="activity-content">
+                                    <h4>New certificate synced</h4>
+                                    <p class="activity-time">2 minutes ago</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">🔄</div>
+                                <div class="activity-content">
+                                    <h4>Coursera sync completed</h4>
+                                    <p class="activity-time">1 hour ago</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">⭐</div>
+                                <div class="activity-content">
+                                    <h4>Profile view milestone</h4>
+                                    <p class="activity-time">3 hours ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Center -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">
+                            <span>🚀</span> Quick Actions
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <button class="btn btn-secondary" onclick="exportPortfolio()">
+                                📄 Export Portfolio
+                            </button>
+                            <button class="btn btn-secondary" onclick="sharePortfolio()">
+                                🔗 Share Portfolio
+                            </button>
+                            <button class="btn btn-outline" onclick="viewAnalytics()">
+                                📊 View Analytics
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Explore Portfolios Tab -->
+    <div id="explore" class="tab-content">
+        <div class="container">
+            <section class="search-section">
+                <div class="search-hero">
+                    <h2>🌟 Discover Amazing Portfolios</h2>
+                    <p>Explore certificate portfolios from professionals worldwide. Get inspired and discover new learning opportunities.</p>
+                    
+                    <form id="search-form" class="search-form">
+                        <input 
+                            type="text" 
+                            id="user-input" 
+                            class="search-input" 
+                            placeholder="Enter User ID to explore their portfolio"
+                            required
+                        />
+                        <button type="submit" id="search-btn" class="search-btn">
+                            <span>🔍</span> Explore Portfolio
+                        </button>
+                    </form>
+                    
+                    <div id="error-message" class="error hidden"></div>
+                    <div id="loading" class="loading hidden">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading portfolio...</div>
+                    </div>
+                    
+                    <h3 style="margin: 2rem 0 1rem 0; color: var(--gray-700);">Featured Portfolios</h3>
+                    <div class="demo-users">
+                        <div class="demo-user-card" onclick="loadUser('user1')">
+                            <div class="demo-avatar" style="background: var(--primary);">AC</div>
+                            <div class="demo-name">Alex Chen</div>
+                            <div class="demo-title">Data Science Expert</div>
+                            <div class="demo-stats">
+                                <span>6 certificates</span>
+                                <span>750 hours</span>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-user-card" onclick="loadUser('user2')">
+                            <div class="demo-avatar" style="background: var(--success);">SJ</div>
+                            <div class="demo-name">Sarah Johnson</div>
+                            <div class="demo-title">Digital Marketing Pro</div>
+                            <div class="demo-stats">
+                                <span>5 certificates</span>
+                                <span>320 hours</span>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-user-card" onclick="loadUser('user3')">
+                            <div class="demo-avatar" style="background: var(--danger);">MR</div>
+                            <div class="demo-name">Michael Rodriguez</div>
+                            <div class="demo-title">Security Specialist</div>
+                            <div class="demo-stats">
+                                <span>4 certificates</span>
+                                <span>380 hours</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Display -->
+            <section id="profile-display" class="profile-display">
+                <button class="btn btn-secondary" onclick="backToExplore()" style="margin-bottom: 2rem;">
+                    ← Back to Explore
+                </button>
+                
+                <div class="profile-header">
+                    <div class="container">
+                        <div class="profile-info">
+                            <img id="profile-avatar" class="profile-avatar" src="" alt="Profile" />
+                            <div class="profile-details">
+                                <h2 id="profile-name">User Name</h2>
+                                <p id="profile-email" class="profile-email">user@email.com</p>
+                                <p id="profile-bio" class="profile-bio"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-card">
+                                <div id="total-certificates" class="stat-number">0</div>
+                                <div class="stat-label">Certificates</div>
+                            </div>
+                            <div class="stat-card">
+                                <div id="total-hours" class="stat-number">0</div>
+                                <div class="stat-label">Hours</div>
+                            </div>
+                            <div class="stat-card">
+                                <div id="total-platforms" class="stat-number">0</div>
+                                <div class="stat-label">Platforms</div>
+                            </div>
+                            <div class="stat-card">
+                                <div id="total-skills" class="stat-number">0</div>
+                                <div class="stat-label">Skills</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="certificates-container">
+                        <h3 class="section-title">Professional Certificates</h3>
+                        <div id="certificates-grid" class="certificates-grid"></div>
+                    </div>
+
+                    <div class="sidebar">
+                        <div class="sidebar-card">
+                            <h4 class="sidebar-title">
+                                <span>🎯</span> Top Skills
+                            </h4>
+                            <div id="skills-cloud" class="skills-cloud"></div>
+                        </div>
+
+                        <div class="sidebar-card">
+                            <h4 class="sidebar-title">
+                                <span>🏢</span> Learning Platforms
+                            </h4>
+                            <div id="platforms-list" class="platforms-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Application state
+        let currentUser = null;
+        let allCertificates = [];
+        let myProfile = JSON.parse(localStorage.getItem('myProfile')) || {};
+        let connectedPlatforms = JSON.parse(localStorage.getItem('connectedPlatforms')) || ['coursera', 'linkedin'];
+
+        // Tab Management
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'dashboard') {
+                loadDashboard();
+            }
+        }
+
+        // Dashboard Management
+        function loadDashboard() {
+            if (myProfile.name) {
+                document.getElementById('user-name').value = myProfile.name || '';
+                document.getElementById('user-email').value = myProfile.email || '';
+                document.getElementById('user-location').value = myProfile.location || '';
+                document.getElementById('user-linkedin').value = myProfile.linkedin || '';
+                document.getElementById('user-bio').value = myProfile.bio || '';
+            }
+            updateDashboardStats();
+        }
+
+        function updateDashboardStats() {
+            // Simulate real data based on connected platforms
+            const stats = calculatePortfolioStats();
+            document.getElementById('dashboard-total-certs').textContent = stats.certificates;
+            document.getElementById('dashboard-total-hours').textContent = stats.hours;
+            document.getElementById('dashboard-platforms').textContent = connectedPlatforms.length;
+            document.getElementById('dashboard-skills').textContent = stats.skills;
+        }
+
+        function calculatePortfolioStats() {
+            // Simulate stats based on connected platforms
+            let certificates = 0;
+            let hours = 0;
+            let skills = 0;
+            
+            if (connectedPlatforms.includes('coursera')) {
+                certificates += 12;
+                hours += 340;
+                skills += 25;
+            }
+            
+            if (connectedPlatforms.includes('linkedin')) {
+                certificates += 8;
+                hours += 95;
+                skills += 23;
+            }
+            
+            return { certificates, hours, skills };
+        }
+
+        function savePersonalInfo() {
+            const profile = {
+                name: document.getElementById('user-name').value,
+                email: document.getElementById('user-email').value,
+                location: document.getElementById('user-location').value,
+                linkedin: document.getElementById('user-linkedin').value,
+                bio: document.getElementById('user-bio').value,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            if (!profile.name || !profile.email) {
+                showNotification('Please fill in required fields (Name and Email)', 'error');
+                return;
+            }
+            
+            myProfile = profile;
+            localStorage.setItem('myProfile', JSON.stringify(myProfile));
+            showNotification('Profile saved successfully! 🎉', 'success');
+        }
+
+        // Platform Management
+        function connectPlatform(platformName) {
+            showNotification(`🔗 Connecting to ${platformName}...`, 'info');
+            
+            // Simulate connection process
+            setTimeout(() => {
+                connectedPlatforms.push(platformName);
+                localStorage.setItem('connectedPlatforms', JSON.stringify(connectedPlatforms));
+                
+                // Update UI
+                const platformCard = event.target.closest('.platform-card');
+                platformCard.classList.add('connected');
+                
+                const statusElement = platformCard.querySelector('.platform-status');
+                statusElement.innerHTML = '✅ Connected';
+                statusElement.className = 'platform-status status-connected';
+                
+                const button = platformCard.querySelector('button');
+                button.innerHTML = '⚙️ Manage Connection';
+                button.className = 'btn btn-secondary';
+                
+                // Update stats
+                updateDashboardStats();
+                
+                showNotification(`✅ Successfully connected to ${platformName}!`, 'success');
+                
+                // Simulate syncing certificates
+                setTimeout(() => {
+                    showNotification(`🔄 Syncing certificates from ${platformName}...`, 'info');
+                    setTimeout(() => {
+                        showNotification(`📜 Found new certificates from ${platformName}!`, 'success');
+                    }, 2000);
+                }, 1000);
+            }, 2000);
+        }
+
+        function togglePlatform(platformName) {
+            showNotification(`⚙️ Managing ${platformName} connection...`, 'info');
+        }
+
+        function syncAllPlatforms() {
+            showNotification('🔄 Syncing all platforms...', 'info');
+            
+            setTimeout(() => {
+                showNotification('✅ All platforms synced successfully!', 'success');
+                updateDashboardStats();
+            }, 3000);
+        }
+
+        // Portfolio Actions
+        function previewPortfolio() {
+            if (!myProfile.name) {
+                showNotification('Please save your personal information first', 'error');
+                return;
+            }
+            
+            showNotification('👁️ Opening portfolio preview...', 'info');
+            
+            // Create mock data for preview
+            const previewData = {
+                user: {
+                    ...myProfile,
+                    id: 'my-profile',
+                    profileImage: `https://via.placeholder.com/120x120/2563eb/white?text=${myProfile.name?.charAt(0) || 'U'}`
+                },
+                certificates: generateMockCertificates()
+            };
+            
+            showTab('explore');
+            showProfile(previewData);
+        }
+
+        function generateMockCertificates() {
+            const mockCerts = [];
+            
+            if (connectedPlatforms.includes('coursera')) {
+                mockCerts.push({
+                    id: 'mock_1',
+                    courseName: 'Data Science Specialization',
+                    platform: 'Coursera',
+                    institution: 'Johns Hopkins University',
+                    completionDate: '2024-08-15',
+                    verificationStatus: 'Verified',
+                    duration: '6 months',
+                    hours: 180,
+                    grade: '96%',
+                    skills: ['Data Science', 'R Programming', 'Machine Learning', 'Statistical Analysis'],
+                    category: 'Data Science',
+                    thumbnail: 'https://via.placeholder.com/300x140/0056d3/white?text=Coursera'
+                });
+            }
+            
+            if (connectedPlatforms.includes('linkedin')) {
+                mockCerts.push({
+                    id: 'mock_2',
+                    courseName: 'Digital Marketing Foundations',
+                    platform: 'LinkedIn Learning',
+                    institution: 'LinkedIn',
+                    completionDate: '2024-07-20',
+                    verificationStatus: 'Verified',
+                    duration: '4 weeks',
+                    hours: 25,
+                    grade: 'Completed',
+                    skills: ['Digital Marketing', 'SEO', 'Social Media', 'Analytics'],
+                    category: 'Marketing',
+                    thumbnail: 'https://via.placeholder.com/300x140/0077b5/white?text=LinkedIn'
+                });
+            }
+            
+            return mockCerts;
+        }
+
+        function exportPortfolio() {
+            showNotification('📄 Exporting portfolio...', 'info');
+            
+            const data = {
+                profile: myProfile,
+                connectedPlatforms: connectedPlatforms,
+                stats: calculatePortfolioStats(),
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `portfolio-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('✅ Portfolio exported successfully!', 'success');
+        }
+
+        function sharePortfolio() {
+            if (!myProfile.name) {
+                showNotification('Please save your profile first', 'error');
+                return;
+            }
+            
+            const url = `${window.location.origin}?portfolio=${myProfile.name.toLowerCase().replace(' ', '-')}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `${myProfile.name}'s Professional Portfolio`,
+                    text: 'Check out my professional certificate portfolio!',
+                    url: url
+                });
+            } else {
+                navigator.clipboard.writeText(url);
+                showNotification('🔗 Portfolio link copied to clipboard!', 'success');
+            }
+        }
+
+        function viewAnalytics() {
+            showNotification('📊 Analytics feature coming soon!', 'info');
+        }
+
+        // Explore functionality (same as before)
+        const searchForm = document.getElementById('search-form');
+        const userInput = document.getElementById('user-input');
+        const searchBtn = document.getElementById('search-btn');
+        const errorMessage = document.getElementById('error-message');
+        const loading = document.getElementById('loading');
+        const profileDisplay = document.getElementById('profile-display');
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 2rem;
+                right: 2rem;
+                padding: 1rem 1.5rem;
+                border-radius: 1rem;
+                font-weight: 600;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                max-width: 400px;
+                ${type === 'success' ? 'background: var(--gradient-success); color: white;' : ''}
+                ${type === 'error' ? 'background: linear-gradient(135deg, #ef4444, #dc2626); color: white;' : ''}
+                ${type === 'info' ? 'background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white;' : ''}
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; font-size: 1.2rem;">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            setTimeout(() => {
+                errorMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        function showLoading() {
+            loading.classList.remove('hidden');
+            searchBtn.disabled = true;
+        }
+
+        function hideLoading() {
+            loading.classList.add('hidden');
+            searchBtn.disabled = false;
+        }
+
+        function backToExplore() {
+            profileDisplay.style.display = 'none';
+            document.querySelector('.search-section').style.display = 'block';
+            userInput.value = '';
+        }
+
+        function showProfile(userData) {
+            currentUser = userData.user;
+            allCertificates = userData.certificates;
+            
+            document.querySelector('.search-section').style.display = 'none';
+            profileDisplay.style.display = 'block';
+            
+            populateProfile(userData);
+        }
+
+        async function fetchUserData(userId) {
+            try {
+                const response = await fetch(`http://localhost:3001/api/certificates/${userId}`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'User not found');
+                }
+                
+                return data.data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        function populateProfile(userData) {
+            const user = userData.user;
+            const certificates = userData.certificates || [];
+            
+            document.getElementById('profile-avatar').src = user.profileImage || `https://via.placeholder.com/120x120/2563eb/white?text=${user.name.charAt(0)}`;
+            document.getElementById('profile-name').textContent = user.name;
+            document.getElementById('profile-email').textContent = user.email;
+            document.getElementById('profile-bio').textContent = user.bio || `Professional with ${certificates.length} verified certificates`;
+            
+            const platforms = [...new Set(certificates.map(cert => cert.platform))];
+            const skills = [...new Set(certificates.flatMap(cert => cert.skills || []))];
+            const totalHours = certificates.reduce((sum, cert) => sum + (cert.hours || 0), 0);
+            
+            document.getElementById('total-certificates').textContent = certificates.length;
+            document.getElementById('total-hours').textContent = totalHours.toLocaleString();
+            document.getElementById('total-platforms').textContent = platforms.length;
+            document.getElementById('total-skills').textContent = skills.length;
+            
+            renderCertificates(certificates);
+            renderSkills(skills, certificates);
+            renderPlatforms(platforms, certificates);
+        }
+
+        function renderCertificates(certificates) {
+            const container = document.getElementById('certificates-grid');
+            container.innerHTML = '';
+            
+            certificates.forEach(cert => {
+                const card = document.createElement('div');
+                card.className = 'certificate-card';
+                
+                const statusClass = `status-${cert.verificationStatus.toLowerCase()}`;
+                
+                card.innerHTML = `
+                    <div class="cert-header">
+                        <img src="${cert.thumbnail}" alt="${cert.courseName}" class="cert-image" 
+                             onerror="this.src='https://via.placeholder.com/320x140/6366f1/white?text=${encodeURIComponent(cert.platform)}'">
+                        <div class="cert-badges">
+                            <span class="platform-badge">${cert.platform}</span>
+                            <span class="status-badge ${statusClass}">${cert.verificationStatus}</span>
+                        </div>
+                    </div>
+                    <div class="cert-content">
+                        <h4 class="cert-title">${cert.courseName}</h4>
+                        <p class="cert-institution">${cert.institution || cert.platform}</p>
+                        <div class="cert-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Completed</span>
+                                <span class="meta-value">${formatDate(cert.completionDate)}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Duration</span>
+                                <span class="meta-value">${cert.duration || 'N/A'}</span>
+                            </div>
+                            ${cert.grade ? `
+                            <div class="meta-item">
+                                <span class="meta-label">Grade</span>
+                                <span class="meta-value">${cert.grade}</span>
+                            </div>
+                            ` : ''}
+                            <div class="meta-item">
+                                <span class="meta-label">Hours</span>
+                                <span class="meta-value">${cert.hours || 0}h</span>
+                            </div>
+                        </div>
+                        <div class="cert-skills">
+                            ${cert.skills.slice(0, 3).map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                            ${cert.skills.length > 3 ? `<span class="skill-tag skill-more">+${cert.skills.length - 3}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function renderSkills(skills, certificates) {
+            const container = document.getElementById('skills-cloud');
+            container.innerHTML = '';
+            
+            const skillCounts = {};
+            certificates.forEach(cert => {
+                cert.skills?.forEach(skill => {
+                    skillCounts[skill] = (skillCounts[skill] || 0) + 1;
+                });
+            });
+            
+            const topSkills = Object.entries(skillCounts)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 12);
+            
+            topSkills.forEach(([skill, count]) => {
+                const skillElement = document.createElement('div');
+                skillElement.className = 'skill-item';
+                skillElement.textContent = `${skill} (${count})`;
+                container.appendChild(skillElement);
+            });
+        }
+
+        function renderPlatforms(platforms, certificates) {
+            const container = document.getElementById('platforms-list');
+            container.innerHTML = '';
+            
+            const platformCounts = {};
+            certificates.forEach(cert => {
+                platformCounts[cert.platform] = (platformCounts[cert.platform] || 0) + 1;
+            });
+            
+            platforms.forEach(platform => {
+                const platformElement = document.createElement('div');
+                platformElement.className = 'platform-item';
+                platformElement.innerHTML = `
+                    <span class="platform-name">${platform}</span>
+                    <span class="platform-count">${platformCounts[platform]}</span>
+                `;
+                container.appendChild(platformElement);
+            });
+        }
+
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = userInput.value.trim();
+            
+            if (!userId) {
+                showError('Please enter a User ID');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                const userData = await fetchUserData(userId);
+                hideLoading();
+                showProfile(userData);
+            } catch (error) {
+                hideLoading();
+                showError(error.message || 'Failed to load portfolio');
+            }
+        });
+
+        function loadUser(userId) {
+            userInput.value = userId;
+            searchForm.dispatchEvent(new Event('submit'));
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboard();
+        });
+
+        console.log('🚀 Advanced Micro-Credentials Aggregator loaded!');
+        console.log('✨ Features: Auto-sync from learning platforms');
+    </script>
+</body>
+</html>
